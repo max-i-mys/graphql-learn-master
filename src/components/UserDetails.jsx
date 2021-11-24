@@ -1,0 +1,33 @@
+import { useEffect, useState } from 'react'
+import UserForm from './UserForm'
+
+export default function UserDetails({ userDetails }) {
+	const [userDetailsArr, setUserDetailsArr] = useState([])
+	const [showForm, setShowForm] = useState(false)
+	useEffect(() => {
+		const arr = []
+		for (let detail in userDetails) {
+			if (detail !== 'id') {
+				arr.push(userDetails[detail])
+			}
+			setUserDetailsArr(arr)
+		}
+	}, [userDetails])
+	return (
+		<>
+			{userDetailsArr.length > 0 && (
+				<ul>
+					{userDetailsArr.map((detailUser, index) => (detailUser ? <li key={index}>{detailUser}</li> : null))}
+				</ul>
+			)}
+			{!showForm && (
+				<button type="button" onClick={() => setShowForm(true)} className="button user__edit">
+					Edit
+				</button>
+			)}
+			{showForm && (
+				<UserForm values={userDetails} currentUserId={userDetails.id} setShowFormEdit={setShowForm} />
+			)}
+		</>
+	)
+}
