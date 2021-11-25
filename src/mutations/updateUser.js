@@ -5,6 +5,11 @@ export const UPDATE_USER = gql`
 		update_users(where: $where, _set: $set) {
 			returning {
 				id
+				twitter
+				name
+				rocket
+				timestamp
+				__typename
 			}
 		}
 	}

@@ -1,15 +1,22 @@
 import { useMutation } from '@apollo/client'
 import { useState } from 'react'
-import { useUser } from '../hooks/useUser'
 import { DELETE_USER } from '../mutations/deleteUser'
+import { USERS } from '../queries/getUsers'
 import { dateFormatter } from '../utils/formatters'
 import UserDetails from './UserDetails'
 
 export default function User({ user }) {
 	const [userDetails, setUserDetails] = useState(null)
 	const [showUserDetails, setShowUserDetails] = useState(false)
-	const [delete_users] = useMutation(DELETE_USER, {})
-	const { updateUser } = useUser()
+	const [delete_users] = useMutation(DELETE_USER, {
+		update(cache, { data: { delete_users } }) {
+			const { users } = cache.readQuery({ query: USERS })
+			cache.writeQuery({
+				query: USERS,
+				data: { users: users.filter(item => item.id !== delete_users.returning[0].id) },
+			})
+		},
+	})
 	function getUserDetails() {
 		if (user) {
 			const details = {
@@ -35,7 +42,6 @@ export default function User({ user }) {
 					},
 				},
 			})
-			updateUser()
 		}
 	}
 

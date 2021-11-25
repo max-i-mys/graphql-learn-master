@@ -5,7 +5,10 @@ export const CREATE_USER = gql`
 		insert_users(objects: $objects) {
 			returning {
 				id
+				timestamp
 				name
+				rocket
+				twitter
 			}
 		}
 	}

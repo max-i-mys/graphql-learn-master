@@ -1,12 +1,32 @@
 import { useMutation } from '@apollo/client'
-import { useUser } from '../hooks/useUser'
 import { CREATE_USER } from '../mutations/createUser'
 import { UPDATE_USER } from '../mutations/updateUser'
+import { USERS } from '../queries/getUsers'
 
 export default function UserForm({ values, setShowFormEdit, setShowFormAdd, currentUserId }) {
-	const [insert_users] = useMutation(CREATE_USER)
-	const [update_users] = useMutation(UPDATE_USER)
-	const { updateUser } = useUser()
+	const [insert_users] = useMutation(CREATE_USER, {
+		update(cache, { data: { insert_users } }) {
+			const { users } = cache.readQuery({ query: USERS })
+			cache.writeQuery({
+				query: USERS,
+				data: { users: [...insert_users.returning, ...users] },
+			})
+		},
+	})
+
+	const [update_users] = useMutation(UPDATE_USER, {
+		update(cache, { data: { update_users } }) {
+			const { users } = cache.readQuery({ query: USERS })
+			const [currentUser] = update_users.returning
+			const currentId = users.findIndex(item => item.id === currentUser.id)
+			const newUserArr = [...users]
+			newUserArr.splice(currentId, 1, currentUser)
+			cache.writeQuery({
+				query: USERS,
+				data: { users: newUserArr },
+			})
+		},
+	})
 
 	function handlerCancel() {
 		if (setShowFormEdit) {
@@ -35,7 +55,6 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 						],
 					},
 				})
-				updateUser()
 				e.target.reset()
 				return
 			}
@@ -58,7 +77,7 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 						},
 					},
 				})
-				updateUser()
+				// updateUser()
 				setShowFormEdit(prev => !prev)
 			}
 		}
