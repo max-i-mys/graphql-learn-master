@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import UserForm from './UserForm'
 
-export default function UserDetails({ userDetails, setUserDetails }) {
+export default function UserDetails({ userDetails }) {
 	const [userDetailsArr, setUserDetailsArr] = useState([])
 	const [showForm, setShowForm] = useState(false)
 	useEffect(() => {
@@ -29,12 +29,7 @@ export default function UserDetails({ userDetails, setUserDetails }) {
 				</button>
 			)}
 			{showForm && (
-				<UserForm
-					values={userDetails}
-					setUserDetails={setUserDetails}
-					currentUserId={userDetails.id}
-					setShowFormEdit={setShowForm}
-				/>
+				<UserForm values={userDetails} currentUserId={userDetails.id} setShowFormEdit={setShowForm} />
 			)}
 		</>
 	)

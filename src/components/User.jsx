@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DELETE_USER } from '../mutations/deleteUser'
 import { USERS } from '../queries/getUsers'
 import { dateFormatter } from '../utils/formatters'
@@ -8,6 +8,17 @@ import UserDetails from './UserDetails'
 export default function User({ user }) {
 	const [userDetails, setUserDetails] = useState(null)
 	const [showUserDetails, setShowUserDetails] = useState(false)
+	useEffect(() => {
+		const details = {
+			name: user.name,
+			rocket: user.rocket,
+			timestamp: dateFormatter.format(Date.parse(user.timestamp)),
+			twitter: user.twitter,
+			id: user.id,
+		}
+		setUserDetails(details)
+	}, [user])
+
 	const [delete_users] = useMutation(DELETE_USER, {
 		update(cache, { data: { delete_users } }) {
 			const { users } = cache.readQuery({ query: USERS })
@@ -18,15 +29,8 @@ export default function User({ user }) {
 		},
 	})
 	function getUserDetails() {
-		if (user) {
-			const details = {
-				name: user.name,
-				rocket: user.rocket,
-				timestamp: dateFormatter.format(Date.parse(user.timestamp)),
-				twitter: user.twitter,
-				id: user.id,
-			}
-			setUserDetails(details)
+		if (userDetails) {
+			setUserDetails(userDetails)
 			setShowUserDetails(prev => !prev)
 		}
 	}
@@ -59,9 +63,7 @@ export default function User({ user }) {
 						Delete
 					</button>
 				</div>
-				<div className="user__details">
-					{showUserDetails && <UserDetails userDetails={userDetails} setUserDetails={setUserDetails} />}
-				</div>
+				<div className="user__details">{showUserDetails && <UserDetails userDetails={userDetails} />}</div>
 			</li>
 		</>
 	)

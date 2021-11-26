@@ -3,7 +3,7 @@ import { CREATE_USER } from '../mutations/createUser'
 import { UPDATE_USER } from '../mutations/updateUser'
 import { USERS } from '../queries/getUsers'
 
-export default function UserForm({ values, setShowFormEdit, setShowFormAdd, currentUserId, setUserDetails }) {
+export default function UserForm({ values, setShowFormEdit, setShowFormAdd, currentUserId }) {
 	const [insert_users] = useMutation(CREATE_USER, {
 		update(cache, { data: { insert_users } }) {
 			const { users } = cache.readQuery({ query: USERS })
@@ -97,7 +97,8 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 				})
 				setShowFormEdit(prev => !prev)
 			}
-			setUserDetails({ ...newDataUser, id: currentUserId, timestamp: values.timestamp })
+			// console.log(values)
+			// setUserDetails({ ...newDataUser, id: currentUserId, timestamp: values.timestamp })
 		}
 	}
 	return (
