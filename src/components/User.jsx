@@ -53,7 +53,7 @@ export default function User({ user }) {
 						<span onClick={getUserDetails} className="user__name">
 							{user.name}
 						</span>
-						({user.rocket})
+						({user.rocket ? user.rocket : 'no rocket'})
 					</p>
 					<button onClick={userDelete} type="button" className="user__del button">
 						Delete

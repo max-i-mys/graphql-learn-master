@@ -97,7 +97,7 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 				})
 				setShowFormEdit(prev => !prev)
 			}
-			setUserDetails({ ...newDataUser, id: currentUserId })
+			setUserDetails({ ...newDataUser, id: currentUserId, timestamp: values.timestamp })
 		}
 	}
 	return (
