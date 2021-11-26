@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import UserForm from './UserForm'
 
-export default function UserDetails({ userDetails }) {
+export default function UserDetails({ userDetails, setUserDetails }) {
 	const [userDetailsArr, setUserDetailsArr] = useState([])
 	const [showForm, setShowForm] = useState(false)
 	useEffect(() => {
@@ -13,6 +13,9 @@ export default function UserDetails({ userDetails }) {
 			setUserDetailsArr(arr)
 		}
 	}, [userDetails])
+	function showEditForm() {
+		setShowForm(true)
+	}
 	return (
 		<>
 			{userDetailsArr.length > 0 && (
@@ -21,12 +24,17 @@ export default function UserDetails({ userDetails }) {
 				</ul>
 			)}
 			{!showForm && (
-				<button type="button" onClick={() => setShowForm(true)} className="button user__edit">
+				<button type="button" onClick={showEditForm} className="button user__edit">
 					Edit
 				</button>
 			)}
 			{showForm && (
-				<UserForm values={userDetails} currentUserId={userDetails.id} setShowFormEdit={setShowForm} />
+				<UserForm
+					values={userDetails}
+					setUserDetails={setUserDetails}
+					currentUserId={userDetails.id}
+					setShowFormEdit={setShowForm}
+				/>
 			)}
 		</>
 	)

@@ -48,16 +48,20 @@ export default function User({ user }) {
 	return (
 		<>
 			<li className="user">
-				<p className="user__title">
-					<span onClick={getUserDetails} className="user__name">
-						{user.name}
-					</span>
-					({user.rocket})
+				<div className="user__title">
+					<p>
+						<span onClick={getUserDetails} className="user__name">
+							{user.name}
+						</span>
+						({user.rocket})
+					</p>
 					<button onClick={userDelete} type="button" className="user__del button">
 						Delete
 					</button>
-				</p>
-				<div className="user__details">{showUserDetails && <UserDetails userDetails={userDetails} />}</div>
+				</div>
+				<div className="user__details">
+					{showUserDetails && <UserDetails userDetails={userDetails} setUserDetails={setUserDetails} />}
+				</div>
 			</li>
 		</>
 	)

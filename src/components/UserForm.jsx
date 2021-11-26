@@ -3,7 +3,7 @@ import { CREATE_USER } from '../mutations/createUser'
 import { UPDATE_USER } from '../mutations/updateUser'
 import { USERS } from '../queries/getUsers'
 
-export default function UserForm({ values, setShowFormEdit, setShowFormAdd, currentUserId }) {
+export default function UserForm({ values, setShowFormEdit, setShowFormAdd, currentUserId, setUserDetails }) {
 	const [insert_users] = useMutation(CREATE_USER, {
 		update(cache, { data: { insert_users } }) {
 			const { users } = cache.readQuery({ query: USERS })
@@ -14,19 +14,7 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 		},
 	})
 
-	const [update_users] = useMutation(UPDATE_USER, {
-		update(cache, { data: { update_users } }) {
-			const { users } = cache.readQuery({ query: USERS })
-			const [currentUser] = update_users.returning
-			const currentId = users.findIndex(item => item.id === currentUser.id)
-			const newUserArr = [...users]
-			newUserArr.splice(currentId, 1, currentUser)
-			cache.writeQuery({
-				query: USERS,
-				data: { users: newUserArr },
-			})
-		},
-	})
+	const [update_users] = useMutation(UPDATE_USER)
 
 	function handlerCancel() {
 		if (setShowFormEdit) {
@@ -43,16 +31,32 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 		const valueTwitter = e.target.twitter.value
 		e.preventDefault()
 		if (valueName || valueRocket || valueTwitter) {
+			const newDataUser = {
+				name: valueName,
+				rocket: valueRocket,
+				twitter: valueTwitter,
+			}
 			if (setShowFormAdd) {
 				insert_users({
 					variables: {
 						objects: [
 							{
-								name: valueName,
-								rocket: valueRocket,
-								twitter: valueTwitter,
+								...newDataUser,
 							},
 						],
+					},
+					optimisticResponse: {
+						insert_users: {
+							__typename: 'users_mutation_response',
+							returning: [
+								{
+									__typename: 'users',
+									id: Date.now(),
+									timestamp: Date.now(),
+									...newDataUser,
+								},
+							],
+						},
 					},
 				})
 				e.target.reset()
@@ -61,7 +65,9 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 			if (setShowFormEdit) {
 				update_users({
 					variables: {
-						set: { name: valueName, twitter: valueTwitter, rocket: valueRocket },
+						set: {
+							...newDataUser,
+						},
 						where: {
 							_or: [
 								{
@@ -76,10 +82,22 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 							],
 						},
 					},
+					optimisticResponse: {
+						update_users: {
+							__typename: 'users_mutation_response',
+							returning: [
+								{
+									__typename: 'users',
+									id: currentUserId,
+									...newDataUser,
+								},
+							],
+						},
+					},
 				})
-				// updateUser()
 				setShowFormEdit(prev => !prev)
 			}
+			setUserDetails({ ...newDataUser, id: currentUserId })
 		}
 	}
 	return (

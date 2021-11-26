@@ -1,4 +1,5 @@
 import gql from 'graphql-tag'
+import { REQUIRED_FIELD_USER } from '../fragments/userFragment'
 
 export const CREATE_USER = gql`
 	mutation Mutation($objects: [users_insert_input!]!) {
@@ -6,10 +7,9 @@ export const CREATE_USER = gql`
 			returning {
 				id
 				timestamp
-				name
-				rocket
-				twitter
+				...requiredFieldUsers
 			}
 		}
 	}
+	${REQUIRED_FIELD_USER}
 `
