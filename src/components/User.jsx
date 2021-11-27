@@ -8,11 +8,13 @@ import UserDetails from './UserDetails'
 export default function User({ user }) {
 	const [userDetails, setUserDetails] = useState(null)
 	const [showUserDetails, setShowUserDetails] = useState(false)
+
 	useEffect(() => {
+		const fullTime = +user.timestamp || Date.parse(user.timestamp)
 		const details = {
 			name: user.name,
 			rocket: user.rocket,
-			timestamp: dateFormatter.format(Date.parse(user.timestamp)),
+			timestamp: dateFormatter.format(fullTime),
 			twitter: user.twitter,
 			id: user.id,
 		}
