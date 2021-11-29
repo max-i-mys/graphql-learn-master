@@ -1,6 +1,5 @@
 import { useMutation } from '@apollo/client'
 import { Form, Text } from 'informed'
-import { useRef } from 'react'
 import { CREATE_USER } from '../mutations/createUser'
 import { UPDATE_USER } from '../mutations/updateUser'
 import { USERS } from '../queries/getUsers'
@@ -15,7 +14,6 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 			})
 		},
 	})
-	const apiRef = useRef()
 	const [update_users] = useMutation(UPDATE_USER)
 
 	function handlerCancel() {
@@ -27,13 +25,15 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 			setShowFormAdd(false)
 		}
 	}
-	function handlerUser(e) {
-		const { username: valueName, rocket: valueRocket, twitter: valueTwitter } = apiRef.current.getValues()
+	function handlerUser(formApi) {
+		const valueName = formApi.getValue('username')
+		const valueRocket = formApi.getValue('rocket')
+		const valueTwitter = formApi.getValue('twitter')
 		if (valueName || valueRocket || valueTwitter) {
 			const newDataUser = {
-				name: valueName,
-				rocket: valueRocket,
-				twitter: valueTwitter,
+				name: valueName.trim(),
+				rocket: valueRocket.trim(),
+				twitter: valueTwitter.trim(),
 			}
 			if (setShowFormAdd) {
 				insert_users({
@@ -58,9 +58,7 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 						},
 					},
 				})
-				apiRef.current.setValue('username', '')
-				apiRef.current.setValue('rocket', '')
-				apiRef.current.setValue('twitter', '')
+				formApi.reset()
 				return
 			}
 			if (setShowFormEdit) {
@@ -101,20 +99,22 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 		}
 	}
 	return (
-		<>
-			<Form onSubmit={handlerUser} apiRef={apiRef} className="user__form">
-				<Text field="username" name="username" initialValue={values?.name || ''} placeholder="Username" />
-				<Text field="rocket" name="rocket" initialValue={values?.rocket || ''} placeholder="Rocket" />
-				<Text field="twitter" name="twitter" initialValue={values?.twitter || ''} placeholder="Twitter" />
-				<div className="user__btn-block">
-					<button onClick={handlerCancel} type="button" className="button user__cancel">
-						Cancel
-					</button>
-					<button type="submit" className="button user__action">
-						{values ? 'Edit' : 'Add'}
-					</button>
+		<Form
+			render={({ formApi }) => (
+				<div className="user__form">
+					<Text field="username" initialValue={values?.name || ''} placeholder="Username" />
+					<Text field="rocket" initialValue={values?.rocket || ''} placeholder="Rocket" />
+					<Text field="twitter" initialValue={values?.twitter || ''} placeholder="Twitter" />
+					<div className="user__btn-block">
+						<button onClick={handlerCancel} type="button" className="button user__cancel">
+							Cancel
+						</button>
+						<button type="button" onClick={() => handlerUser(formApi)} className="button user__action">
+							{values ? 'Edit' : 'Add'}
+						</button>
+					</div>
 				</div>
-			</Form>
-		</>
+			)}
+		/>
 	)
 }

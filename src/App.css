@@ -118,6 +118,9 @@ q:after {
 	content: '';
 	content: none;
 }
+body {
+	padding: 30px;
+}
 .user {
 	display: flex;
 	align-items: center;
