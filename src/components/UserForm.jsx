@@ -1,4 +1,6 @@
 import { useMutation } from '@apollo/client'
+import { Form, Text } from 'informed'
+import { useRef } from 'react'
 import { CREATE_USER } from '../mutations/createUser'
 import { UPDATE_USER } from '../mutations/updateUser'
 import { USERS } from '../queries/getUsers'
@@ -13,7 +15,7 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 			})
 		},
 	})
-
+	const apiRef = useRef()
 	const [update_users] = useMutation(UPDATE_USER)
 
 	function handlerCancel() {
@@ -26,10 +28,7 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 		}
 	}
 	function handlerUser(e) {
-		const valueName = e.target.username.value
-		const valueRocket = e.target.rocket.value
-		const valueTwitter = e.target.twitter.value
-		e.preventDefault()
+		const { username: valueName, rocket: valueRocket, twitter: valueTwitter } = apiRef.current.getValues()
 		if (valueName || valueRocket || valueTwitter) {
 			const newDataUser = {
 				name: valueName,
@@ -59,7 +58,9 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 						},
 					},
 				})
-				e.target.reset()
+				apiRef.current.setValue('username', '')
+				apiRef.current.setValue('rocket', '')
+				apiRef.current.setValue('twitter', '')
 				return
 			}
 			if (setShowFormEdit) {
@@ -97,16 +98,14 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 				})
 				setShowFormEdit(prev => !prev)
 			}
-			// console.log(values)
-			// setUserDetails({ ...newDataUser, id: currentUserId, timestamp: values.timestamp })
 		}
 	}
 	return (
 		<>
-			<form onSubmit={handlerUser} className="user__form">
-				<input name="username" type="text" defaultValue={values?.name || ''} placeholder="Username" />
-				<input name="rocket" type="text" defaultValue={values?.rocket || ''} placeholder="Rocket" />
-				<input name="twitter" type="text" defaultValue={values?.twitter || ''} placeholder="Twitter" />
+			<Form onSubmit={handlerUser} apiRef={apiRef} className="user__form">
+				<Text field="username" name="username" initialValue={values?.name || ''} placeholder="Username" />
+				<Text field="rocket" name="rocket" initialValue={values?.rocket || ''} placeholder="Rocket" />
+				<Text field="twitter" name="twitter" initialValue={values?.twitter || ''} placeholder="Twitter" />
 				<div className="user__btn-block">
 					<button onClick={handlerCancel} type="button" className="button user__cancel">
 						Cancel
@@ -115,7 +114,7 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 						{values ? 'Edit' : 'Add'}
 					</button>
 				</div>
-			</form>
+			</Form>
 		</>
 	)
 }
