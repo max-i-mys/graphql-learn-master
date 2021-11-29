@@ -8,6 +8,7 @@ import UserDetails from './UserDetails'
 export default function User({ user }) {
 	const [userDetails, setUserDetails] = useState(null)
 	const [showUserDetails, setShowUserDetails] = useState(false)
+	const [btnDisabled, setBtnDisabled] = useState(false)
 
 	useEffect(() => {
 		const fullTime = +user.timestamp || Date.parse(user.timestamp)
@@ -48,6 +49,7 @@ export default function User({ user }) {
 					},
 				},
 			})
+			setBtnDisabled(true)
 		}
 	}
 
@@ -61,7 +63,7 @@ export default function User({ user }) {
 						</span>
 						({user.rocket ? user.rocket : 'no rocket'})
 					</p>
-					<button onClick={userDelete} type="button" className="user__del button">
+					<button onClick={userDelete} type="button" className="user__del button" disabled={btnDisabled}>
 						Delete
 					</button>
 				</div>

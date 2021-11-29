@@ -118,14 +118,6 @@ q:after {
 	content: '';
 	content: none;
 }
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
-}
-body {
-	padding: 30px;
-	background-color: #eaeaea;
-}
 .user {
 	display: flex;
 	align-items: center;
