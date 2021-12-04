@@ -25,15 +25,13 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 			setShowFormAdd(false)
 		}
 	}
-	function handlerUser(formApi) {
-		const valueName = formApi.getValue('username')
-		const valueRocket = formApi.getValue('rocket')
-		const valueTwitter = formApi.getValue('twitter')
+	function handlerUser(data, e) {
+		const { username: valueName, rocket: valueRocket, twitter: valueTwitter } = data
 		if (valueName || valueRocket || valueTwitter) {
 			const newDataUser = {
-				name: valueName.trim(),
-				rocket: valueRocket.trim(),
-				twitter: valueTwitter.trim(),
+				name: valueName,
+				rocket: valueRocket,
+				twitter: valueTwitter,
 			}
 			if (setShowFormAdd) {
 				insert_users({
@@ -58,7 +56,6 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 						},
 					},
 				})
-				formApi.reset()
 				return
 			}
 			if (setShowFormEdit) {
@@ -99,22 +96,20 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 		}
 	}
 	return (
-		<Form
-			render={({ formApi }) => (
-				<div className="user__form">
-					<Text field="username" initialValue={values?.name || ''} placeholder="Username" />
-					<Text field="rocket" initialValue={values?.rocket || ''} placeholder="Rocket" />
-					<Text field="twitter" initialValue={values?.twitter || ''} placeholder="Twitter" />
-					<div className="user__btn-block">
-						<button onClick={handlerCancel} type="button" className="button user__cancel">
-							Cancel
-						</button>
-						<button type="button" onClick={() => handlerUser(formApi)} className="button user__action">
-							{values ? 'Edit' : 'Add'}
-						</button>
-					</div>
+		<>
+			<Form onSubmit={handlerUser} className="user__form">
+				<Text field="username" initialValue={values?.name || ''} placeholder="Username" />
+				<Text field="rocket" initialValue={values?.rocket || ''} placeholder="Rocket" />
+				<Text field="twitter" initialValue={values?.twitter || ''} placeholder="Twitter" />
+				<div className="user__btn-block">
+					<button onClick={handlerCancel} type="button" className="button user__cancel">
+						Cancel
+					</button>
+					<button type="submit" className="button user__action">
+						{values ? 'Edit' : 'Add'}
+					</button>
 				</div>
-			)}
-		/>
+			</Form>
+		</>
 	)
 }
