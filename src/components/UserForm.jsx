@@ -5,6 +5,11 @@ import { UPDATE_USER } from '../mutations/updateUser'
 import { USERS } from '../queries/getUsers'
 
 export default function UserForm({ values, setShowFormEdit, setShowFormAdd, currentUserId }) {
+	const initialValues = {
+		'username': values?.name || '',
+		'rocket': values?.rocket || '',
+		'twitter': values?.twitter || ''
+	}
 	const [insert_users] = useMutation(CREATE_USER, {
 		update(cache, { data: { insert_users } }) {
 			const { users } = cache.readQuery({ query: USERS })
@@ -17,23 +22,23 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 	const [update_users] = useMutation(UPDATE_USER)
 
 	function handlerCancel() {
-		if (setShowFormEdit) {
+		if(setShowFormEdit) {
 			setShowFormEdit(false)
 			return
 		}
-		if (setShowFormAdd) {
+		if(setShowFormAdd) {
 			setShowFormAdd(false)
 		}
 	}
 	function handlerUser(data, e) {
 		const { username: valueName, rocket: valueRocket, twitter: valueTwitter } = data
-		if (valueName || valueRocket || valueTwitter) {
+		if(valueName || valueRocket || valueTwitter) {
 			const newDataUser = {
 				name: valueName,
 				rocket: valueRocket,
 				twitter: valueTwitter,
 			}
-			if (setShowFormAdd) {
+			if(setShowFormAdd) {
 				insert_users({
 					variables: {
 						objects: [
@@ -58,7 +63,7 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 				})
 				return
 			}
-			if (setShowFormEdit) {
+			if(setShowFormEdit) {
 				update_users({
 					variables: {
 						set: {
@@ -97,10 +102,10 @@ export default function UserForm({ values, setShowFormEdit, setShowFormAdd, curr
 	}
 	return (
 		<>
-			<Form onSubmit={handlerUser} className="user__form">
-				<Text field="username" initialValue={values?.name || ''} placeholder="Username" />
-				<Text field="rocket" initialValue={values?.rocket || ''} placeholder="Rocket" />
-				<Text field="twitter" initialValue={values?.twitter || ''} placeholder="Twitter" />
+			<Form onSubmit={handlerUser} initialValues={initialValues} className="user__form">
+				<Text field="username" placeholder="Username" />
+				<Text field="rocket" placeholder="Rocket" />
+				<Text field="twitter" placeholder="Twitter" />
 				<div className="user__btn-block">
 					<button onClick={handlerCancel} type="button" className="button user__cancel">
 						Cancel
